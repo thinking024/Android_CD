@@ -1,6 +1,7 @@
 package com.yiyuanzhu.thinking.ui.dashboard;
 
 import android.content.Context;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -35,14 +36,15 @@ public class DashboardFragment extends Fragment {
                 ViewModelProviders.of(this).get(DashboardViewModel.class);
         context = getContext();
         dashboardViewModel.setContext(context); // 必须在获取data前就设定
-        String account = "1805050213";
+        SharedPreferences sp = context.getSharedPreferences("data", Context.MODE_PRIVATE);
+        String account = sp.getString("account", "1805050213");
         dashboardViewModel.setLiveData(account);
     }
 
     public View onCreateView(@NonNull LayoutInflater inflater,
                              final ViewGroup container, Bundle savedInstanceState) {
 
-
+//        每次都要加载数据
         View root = inflater.inflate(R.layout.fragment_dashboard, container, false);
         final ExpandableListView listView = root.findViewById(R.id.listview);
         dashboardViewModel.getLiveData().observe(getViewLifecycleOwner(), new Observer<ArrayList<Grade>>() {
@@ -50,18 +52,20 @@ public class DashboardFragment extends Fragment {
             public void onChanged(@Nullable ArrayList<Grade> grades) {
                 ArrayList<String> terms = new ArrayList<>();
                 ArrayList<ArrayList<Grade>> children = new ArrayList<>();
-                for (Grade grade : grades) {
-                    String term = grade.getTerm();
+                if (grades != null) {
+                    for (Grade grade : grades) {
+                        String term = grade.getTerm();
 //                    没有此学期，则添加
-                    if (terms.indexOf(term) == -1) {
-                        terms.add(term);
-                        children.add(new ArrayList<Grade>());
+                        if (terms.indexOf(term) == -1) {
+                            terms.add(term);
+                            children.add(new ArrayList<Grade>());
+                        }
+                        int index = terms.indexOf(term);
+                        children.get(index).add(grade);
                     }
-                    int index = terms.indexOf(term);
-                    children.get(index).add(grade);
+                    listView.setAdapter(new MyAdapter(context, terms, children));
+                    listView.expandGroup(0);
                 }
-                listView.setAdapter(new MyAdapter(context, terms, children));
-                listView.expandGroup(0);
             }
         });
         return root;

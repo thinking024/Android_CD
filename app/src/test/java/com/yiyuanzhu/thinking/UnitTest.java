@@ -2,6 +2,9 @@ package com.yiyuanzhu.thinking;
 
 import android.util.Log;
 
+import com.yiyuanzhu.thinking.pojo.User;
+import com.yiyuanzhu.thinking.utils.GlobalInfo;
+
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -12,6 +15,7 @@ import java.io.File;
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
@@ -186,15 +190,5 @@ public class UnitTest {
 
     @Test
     public void test7() {
-        SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");//设置日期格式
-        Calendar cld = Calendar.getInstance(Locale.CHINA);
-        cld.setFirstDayOfWeek(Calendar.MONDAY);//以周一为首日
-
-        cld.set(Calendar.DAY_OF_WEEK, Calendar.MONDAY);//周一
-        System.out.println(df.format(cld.getTime()));
-        System.out.println(cld.get(Calendar.YEAR));
-
-        cld.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);//周日
-        System.out.println(df.format(cld.getTime()));
     }
 }

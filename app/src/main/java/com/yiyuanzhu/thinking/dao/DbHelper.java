@@ -16,7 +16,13 @@ public class DbHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL("PRAGMA foreign_keys=ON");
 
-        String createUser = "CREATE TABLE user (account varchar(20) NOT NULL,password varchar(255) NOT NULL,PRIMARY KEY (account))";
+        String createUser = "CREATE TABLE user (\n" +
+                "  account varchar(20) NOT NULL,\n" +
+                "  password varchar(255) NOT NULL,\n" +
+                "  default_table varchar(255),\n" +
+                "  show_weekend integer(1) NOT NULL,\n" +
+                "  current_week integer(2) NOT NULL,\n" +
+                "  PRIMARY KEY (account))";
         db.execSQL(createUser);
 
         String createCourseTable = "CREATE TABLE course_table (\n" +

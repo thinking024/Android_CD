@@ -244,8 +244,8 @@ public class ExampleUnitTest {
                     .build();
 
             Response loginResponse = client.newCall(loginRequest).execute();
-//            System.out.println(loginResponse.code());
-//            System.out.println(loginResponse.request().url().toString());
+            System.out.println(loginResponse.code());
+            System.out.println(loginResponse.request().url().toString());
 
             String courseUrl = "http://kdjw.hnust.edu.cn/jsxsd/xskb/xskb_list.do";
             Request courseRequest = new Request.Builder()//创建Request 对象。
@@ -258,13 +258,24 @@ public class ExampleUnitTest {
 
             System.out.println(courseResponse.body().string());
 
-            String gradeUrl = "http://kdjw.hnust.edu.cn/jsxsd/kscj/cjcx_list";
-            Request gradeRequest = new Request.Builder()//创建Request 对象。
-                    .url(gradeUrl)
+            FormBody.Builder formBody2 = new FormBody.Builder();//创建表单请求体
+            formBody2.add("cj0701id", "");
+            formBody2.add("zc", "");
+            formBody2.add("demo", "");
+            formBody2.add("xnxq01id", "2019-2020-2");
+            formBody2.add("sfFD", "1");
+            formBody2.add("wkbkc", "1");
+            formBody2.add("kbjcmsid", "0B841F8A531A4C05BE8DB7DB4B40AEF1");
+
+            Request courseRequest2 = new Request.Builder()//创建Request 对象。
+                    .url(courseUrl)
                     .addHeader("User-Agent", "Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.7.6)")
+                    .post(formBody2.build())//传递请求体
                     .build();
-            Response gradeResponse = client.newCall(gradeRequest).execute();
-            gradeParser(gradeResponse.body().string(), userAccount);
+
+            Response courseResponse2 = client.newCall(courseRequest2).execute();
+
+            System.out.println(courseResponse2.body().string());
         }
     }
 
@@ -310,11 +321,8 @@ public class ExampleUnitTest {
     @Test
     public void course() throws Exception{
         String userAccount = "1805050213";
-        File input = new File("F:\\课程\\安卓课设\\学期理论课表.html");
+        File input = new File("F:/课程/安卓课设/湖南科技大学_files/xskb_list.html");
         Document doc = Jsoup.parse(input, "UTF-8");
-        Element timetable = doc.getElementById("timetable");
-        Element datatable = doc.getElementById("datatable");
-
         String courseTableName = doc.getElementById("xnxq01id").getElementsByAttributeValue("selected", "selected").first().text();
         System.out.println(courseTableName);
         CourseTable courseTable = new CourseTable();
@@ -336,12 +344,16 @@ public class ExampleUnitTest {
                 for (String classString : classStrings) {
 //                    每节课的信息
                     String classInfo = classString.trim();
-//                    System.out.println(classString.trim());
+                    System.out.println(classInfo);
                     String[] strings = classInfo.split(" ");
-//                    System.out.println(strings.length);
                     String courseName = strings[0];
-                    String teacher = strings[1];
-                    String courseInfo = strings[4];
+                    if (courseName.contains("体育")) {
+                        continue;
+                    }
+                    String courseInfo = strings[strings.length - 1];
+                    String classroom = strings[strings.length - 2].substring(strings[strings.length - 2].indexOf("】") + 1);
+                    String time = strings[strings.length - 3];
+                    String teacher = strings[strings.length - 4];
 
                     Course course = new Course();
                     course.setCourseName(courseName);
@@ -353,22 +365,16 @@ public class ExampleUnitTest {
                         course = courses.get(courses.indexOf(course));
                     }
 
-                    String classroom = strings[3].substring(strings[3].indexOf("】") + 1);
-
-                    String time = strings[2];
-//                    System.out.println(time);
-
-                    //                    一门课被拆分成很多周
-
-                    int orderBeginIndex = time.indexOf("[");
-                    int orderIndex = time.lastIndexOf("-");
-                    int orderEndIndex = time.indexOf("节");
-                    String orderBegin = time.substring(orderBeginIndex + 1, orderIndex);
-                    String orderEnd = time.substring(orderIndex + 1, orderEndIndex);
-                    /*System.out.println(orderBegin);
-                    System.out.println(orderEnd);*/
-
 //                    1-2，5-6周拆成两节课
+                    System.out.println(courseName);
+                    System.out.println(time);
+                    String order = time.substring(time.indexOf(")"));
+                    int orderBeginIndex = order.indexOf("[");
+                    int orderIndex = order.indexOf("-");
+                    int orderIndex2 = order.lastIndexOf("-");
+                    int orderEndIndex = order.indexOf("节");
+                    String orderBegin = order.substring(orderBeginIndex + 1, orderIndex);
+                    String orderEnd = order.substring(orderIndex2 + 1, orderEndIndex);
 
                     String[] weeks = time.substring(0, time.indexOf("(")).split(",");
                     for (String week : weeks) {
@@ -384,8 +390,6 @@ public class ExampleUnitTest {
                             weekBegin += week;
                             weekEnd += week;
                         }
-                        /*System.out.println(weekBegin);
-                        System.out.println(weekEnd);*/
 
                         myClass.setWeekBegin(Integer.parseInt(weekBegin));
                         myClass.setWeekEnd(Integer.parseInt(weekEnd));
@@ -407,12 +411,11 @@ public class ExampleUnitTest {
             }
         }
         courseTable.setCourses(courses);
-        for (Course cours : courseTable.getCourses()) {
-            System.out.println(cours);
-            for (MyClass myClass : cours.getMyClasses()) {
+        for (Course course : courses) {
+            System.out.println(course.getCourseName());
+            for (MyClass myClass : course.getMyClasses()) {
                 System.out.println(myClass);
             }
-            System.out.println();
         }
     }
 
@@ -452,4 +455,5 @@ public class ExampleUnitTest {
             System.out.println(grade);
         }
     }
+
 }

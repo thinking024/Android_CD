@@ -101,9 +101,6 @@ public class HomeViewModel extends ViewModel {
         }
         System.out.println(viewModels.size() + "=========");
         liveData.setValue(viewModels);
-        for (MyClassViewModel viewModel : viewModels) {
-            System.out.println(viewModel);
-        }
     }
 
     public LiveData<ArrayList<MyClassViewModel>> getLiveData() {

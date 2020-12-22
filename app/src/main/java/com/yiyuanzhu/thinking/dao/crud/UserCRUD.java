@@ -18,6 +18,8 @@ public class UserCRUD {
         ContentValues values = new ContentValues();
         values.put("account", user.getAccount());
         values.put("password", user.getPassword());
+        values.put("show_weekend", user.getShow_weekend());
+        values.put("current_week",user.getCurrent_week());
         long result = db.insert("user", null, values);
         db.close();
         if (result == -1) {
@@ -31,8 +33,10 @@ public class UserCRUD {
         DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
         long result = db.update("user", values, "account=?", new String[] {account});
+        System.out.println(result + "========");
         db.close();
         if (result == -1) {
+            System.out.println("update error");
             return null;
         }
         Log.i("db", "updateUser");
@@ -69,6 +73,15 @@ public class UserCRUD {
             }
             if (cursor.getColumnIndex("password") != -1) {
                 user.setPassword(cursor.getString(cursor.getColumnIndex("password")));
+            }
+            if (cursor.getColumnIndex("default_table") != -1) {
+                user.setDefault_table(cursor.getString(cursor.getColumnIndex("default_table")));
+            }
+            if (cursor.getColumnIndex("show_weekend") != -1) {
+                user.setShow_weekend(cursor.getInt(cursor.getColumnIndex("show_weekend")));
+            }
+            if (cursor.getColumnIndex("current_week") != -1) {
+                user.setCurrent_week(cursor.getInt(cursor.getColumnIndex("current_week")));
             }
             users.add(user);
         }

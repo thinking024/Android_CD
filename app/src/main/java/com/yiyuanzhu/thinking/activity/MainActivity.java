@@ -45,9 +45,24 @@ public class MainActivity extends AppCompatActivity {
 //        NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
         NavigationUI.setupWithNavController(navView, navController);
 
-
         final String userAccount = "1805050213";
         final String password = "hn095573";
+        /*new Thread() {
+            @Override
+            public void run() {
+                try {
+                    ArrayList<CourseTable> courseTables = HNUSTCrawler.getCourse(userAccount, password);
+                    for (CourseTable courseTable : courseTables) {
+                        for (Course course : courseTable.getCourses()) {
+                            System.out.println(course);
+                        }
+                        System.out.println("===========");
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();*/
 
     }
 

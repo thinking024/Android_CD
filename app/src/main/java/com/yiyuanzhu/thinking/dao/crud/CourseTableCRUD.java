@@ -45,10 +45,10 @@ public class CourseTableCRUD {
         return result + "";
     }
 
-    public static String deleteCourseTable(String id, Context context) {
+    public static String deleteCourseTable(String selection, String[] selectionargs, Context context) {
         DbHelper dbHelper = new DbHelper(context);
         SQLiteDatabase db = dbHelper.getWritableDatabase();
-        long result = db.delete("course_table","id=?", new String[] {id});
+        long result = db.delete("course_table",selection, selectionargs);
         db.close();
         if (result == -1) {
             return null;
